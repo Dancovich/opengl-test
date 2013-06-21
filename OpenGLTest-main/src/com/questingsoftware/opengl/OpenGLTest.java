@@ -2,65 +2,47 @@ package com.questingsoftware.opengl;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.VertexAttribute;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
 public class OpenGLTest implements ApplicationListener {
 
 	/******************/
-	private PerspectiveCamera pCamera;
-	private Mesh testMesh;
-	private Texture texture;
+	private MeshHelper meshHelper;
+	private PerspectiveCamera camera;
 	
-	private ShaderProgram shaderProgram;
 
 	@Override
 	public void create() {
-
-		testMesh = new Mesh(true, 4, 6, VertexAttribute.Position(),
-				VertexAttribute.ColorUnpacked(), VertexAttribute.TexCoords(0));
-		testMesh.setVertices(new float[] { -0.5f, -0.5f, 0, 1, 1, 1, 1, 0, 1,
-				0.5f, -0.5f, 0, 1, 1, 1, 1, 1, 1, 0.5f, 0.5f, 0, 1, 1, 1, 1, 1,
-				0, -0.5f, 0.5f, 0, 1, 1, 1, 1, 0, 0 });
-		testMesh.setIndices(new short[] { 0, 1, 2, 2, 3, 0 });
-		texture = new Texture(Gdx.files.internal("data/libgdx.png"));
-
-		shaderProgram = new ShaderProgram(Gdx.files.internal("shaders/vertex.glsl")
-				, Gdx.files.internal("shaders/fragment.glsl"));
+		meshHelper = new MeshHelper();
 		
-		if (!shaderProgram.isCompiled()){
-			Gdx.app.log(OpenGLTest.class.getCanonicalName(), shaderProgram.getLog());
-		}
+		// opengl uses -1 to 1 for coords and also is inverted
+		meshHelper.createMesh(new float[] { -0.5f, -0.5f, Color.toFloatBits(0, 0, 255, 255),0f,1f,
+				0.5f, -0.5f, Color.toFloatBits(0, 255, 0, 255),1f,1f,
+				0f, 0.5f, Color.toFloatBits(255, 0, 0, 255),0.5f,0f });
+		
 	}
 
 	@Override
 	public void dispose() {
-		testMesh.dispose();
+		meshHelper.dispose();
 	}
 
 	@Override
 	public void render() {
-		Gdx.gl.glClearColor(1, 1, 1, 1);
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		camera.position.z -= (1 * Gdx.graphics.getDeltaTime());
+		camera.update();
 		
-		pCamera.lookAt(0, 0, 1);
-		pCamera.update();
-		
-		texture.bind();
-		shaderProgram.begin();
-		shaderProgram.setUniformMatrix("u_worldView", pCamera.combined);
-		shaderProgram.setUniformi("u_texture", 0);
-		testMesh.render(shaderProgram, GL10.GL_TRIANGLES);
-		shaderProgram.end();
+		Gdx.graphics.getGL20().glClearColor(0.2f, 0.2f, 0.2f, 1);
+        Gdx.graphics.getGL20().glClear(GL10.GL_COLOR_BUFFER_BIT);
+        meshHelper.drawMesh(camera);
 	}
 
 	@Override
 	public void resize(int width, int height) {
-		pCamera = new PerspectiveCamera(45f, width, height);
+		camera = new PerspectiveCamera(45f, width, height);
+		camera.update();
 	}
 
 	@Override
