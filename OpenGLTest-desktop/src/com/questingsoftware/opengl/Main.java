@@ -9,7 +9,7 @@ public class Main {
 		cfg.title = "OpenGLTest";
 		cfg.useGL20 = true;
 		cfg.width = 480;
-		cfg.height = 320;
+		cfg.height = 270;
 		
 		new LwjglApplication(new OpenGLTest(), cfg);
 	}

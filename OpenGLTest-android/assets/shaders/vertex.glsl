@@ -5,12 +5,13 @@ attribute vec2 a_texCoords;
 uniform mat4 u_ModelViewProjectionMatrix;
 
 varying vec4 v_color;
-varying vec2 v_texCoords;
+//varying vec2 v_texCoords;
     
 void main()                   
 {                    
 	v_color = a_color;
-	v_texCoords = a_texCoords;
+	//v_texCoords = a_texCoords;
 
 	gl_Position = u_ModelViewProjectionMatrix * a_position;
+	//gl_Position = a_position;
 }
